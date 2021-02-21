@@ -1,4 +1,4 @@
-ARG REMOTE=https://github.com/ethereum-optimism/contracts-v2
+ARG REMOTE=https://github.com/MetisProtocol/contracts-v2
 ARG BRANCH=master
 
 FROM node:10.23-buster as build
@@ -15,7 +15,6 @@ RUN git clone $REMOTE /opt/contracts-v2 \
 
 FROM node:10.23-buster
 ARG REMOTE
-LABEL io.optimism.repo.git.remote=$REMOTE
 
 RUN apt-get update \
     && apt-get install -y bash curl jq python3 libusb-1.0 \

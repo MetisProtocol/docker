@@ -1,5 +1,5 @@
 ARG BRANCH=master
-ARG REMOTE=https://github.com/ethereum-optimism/batch-submitter
+ARG REMOTE=https://github.com/MetisProtocol/batch-submitter
 
 FROM node:10.23-buster as build
 
@@ -8,7 +8,6 @@ RUN apt-get update \
 
 ARG BRANCH
 ARG REMOTE
-LABEL io.optimism.repo.git.remote=$REMOTE
 
 RUN git clone $REMOTE /opt/batch-submitter \
     && cd /opt/batch-submitter \
@@ -17,8 +16,6 @@ RUN git clone $REMOTE /opt/batch-submitter \
     && yarn build
 
 FROM node:10.23-buster
-ARG REMOTE
-LABEL io.optimism.repo.git.remote=$REMOTE
 
 RUN apt-get update \
     && apt-get install -y bash curl jq

@@ -1,5 +1,5 @@
 ARG BRANCH=master
-ARG REMOTE=https://github.com/ethereum-optimism/go-ethereum
+ARG REMOTE=https://github.com/MetisProtocol/go-ethereum
 
 FROM golang:1.14-buster as builder
 
@@ -20,7 +20,6 @@ FROM golang:1.14-buster
 
 ARG BRANCH
 ARG REMOTE
-LABEL io.optimism.repo.git.remote=$REMOTE
 
 RUN apt-get update \
     && apt-get install -y bash curl jq ca-certificates
