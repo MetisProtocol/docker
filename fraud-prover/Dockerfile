@@ -1,5 +1,5 @@
 ARG BRANCH=master
-ARG REMOTE=https://github.com/ethereum-optimism/optimism-ts-services
+ARG REMOTE=https://github.com/MetisProtocol/optimism-ts-services
 
 FROM node:10.23-buster as base
 
