@@ -4,7 +4,7 @@ RUN apt-get update \
     && apt-get install -y bash git python build-essential jq
 
 ARG BRANCH=master
-ARG REMOTE=https://github.com/ethereum-optimism/integration-tests
+ARG REMOTE=https://github.com/MetisProtocol/integration-tests
 LABEL io.optimism.repo.git.remote=$REMOTE
 
 RUN git clone \

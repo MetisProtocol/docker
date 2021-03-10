@@ -62,3 +62,5 @@ if [ ! -z "$DEPLOYER_HTTP" ]; then
   else
     exec $cmd
 fi
+
+
