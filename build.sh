@@ -18,7 +18,7 @@ Default values for branche is master.
 "
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
-ORG=ethereumoptimism
+ORG=metisethereumoptimism
 SERVICE=""
 GIT_BRANCH=master
 TAG=$GIT_BRANCH
