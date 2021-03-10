@@ -4,7 +4,7 @@ RUN apt-get update \
     && apt-get install -y bash git python build-essential
 
 ARG BRANCH=master
-ARG REMOTE=https://github.com/ethereum-optimism/hardhat
+ARG REMOTE=https://github.com/MetisProtocol/hardhat
 LABEL io.optimism.repo.git.remote=$REMOTE
 
 RUN git clone $REMOTE /opt/hardhat \
