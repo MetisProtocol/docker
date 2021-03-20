@@ -30,4 +30,4 @@ EXPOSE 8545 8546 8547
 
 COPY wait-for-l1.sh /bin/wait-for-l1.sh
 
-ENTRYPOINT ["/bin/wait-for-l1.sh", "geth", "--verbosity=6"]
+ENTRYPOINT ["/bin/wait-for-l1.sh", "geth", "--verbosity=6 --rollup.statedumppath=http://localhost:8089/state-dump.latest.json"]
