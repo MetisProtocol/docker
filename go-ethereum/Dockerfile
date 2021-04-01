@@ -9,6 +9,7 @@ RUN apt-get update \
 ARG BRANCH
 ARG REMOTE
 
+RUN git ls-remote $REMOTE | grep heads/$BRANCH | tee /cache.txt
 RUN git clone \
     --depth=1 \
     --branch $BRANCH \
@@ -20,6 +21,7 @@ FROM golang:1.14-buster
 
 ARG BRANCH
 ARG REMOTE
+LABEL io.optimism.repo.git.remote=$REMOTE
 
 RUN apt-get update \
     && apt-get install -y bash curl jq ca-certificates
@@ -30,4 +32,4 @@ EXPOSE 8545 8546 8547
 
 COPY wait-for-l1.sh /bin/wait-for-l1.sh
 
-ENTRYPOINT ["/bin/wait-for-l1.sh", "geth --verbosity=6"]
+ENTRYPOINT ["/bin/wait-for-l1.sh", "geth", "--verbosity=6"]

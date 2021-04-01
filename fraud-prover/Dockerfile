@@ -1,7 +1,7 @@
 ARG BRANCH=master
 ARG REMOTE=https://github.com/MetisProtocol/optimism-ts-services
 
-FROM node:10.23-buster as base
+FROM node:14-buster as base
 
 RUN apt-get update \
     && apt-get install -y bash curl jq
@@ -14,6 +14,7 @@ RUN apt-get update \
 ARG BRANCH
 ARG REMOTE
 
+RUN git ls-remote $REMOTE | grep heads/$BRANCH | tee /cache.txt
 RUN git clone $REMOTE /opt/optimism-ts-services \
     && cd /opt/optimism-ts-services \
     && git checkout $BRANCH \

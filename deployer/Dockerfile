@@ -1,20 +1,22 @@
 ARG REMOTE=https://github.com/MetisProtocol/contracts-v2
 ARG BRANCH=master
 
-FROM node:10.23-buster as build
+FROM node:14-buster as build
 RUN apt-get update \
     && apt-get install -y bash git python build-essential libusb-1.0
 
 ARG REMOTE
 ARG BRANCH
-RUN git clone $REMOTE /opt/contracts-v2 \
-    && cd /opt/contracts-v2 \
+RUN git ls-remote $REMOTE | grep heads/$BRANCH | tee /cache.txt
+RUN git clone $REMOTE /opt/contracts \
+    && cd /opt/contracts \
     && git checkout $BRANCH \
     && yarn install \
     && yarn build
 
-FROM node:10.23-buster
+FROM node:14-buster
 ARG REMOTE
+LABEL io.optimism.repo.git.remote=$REMOTE
 
 RUN apt-get update \
     && apt-get install -y bash curl jq python3 libusb-1.0 \
@@ -28,4 +30,4 @@ WORKDIR /opt/contracts-v2
 
 ENV SERVER_PORT=8080
 
-ENTRYPOINT ["./wait-for-l1.sh", "./bin/deploy.js"]
+ENTRYPOINT ["/wait-for-l1.sh", "yarn", "run", "--silent", "deploy"]
