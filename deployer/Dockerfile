@@ -8,8 +8,8 @@ RUN apt-get update \
 ARG REMOTE
 ARG BRANCH
 RUN git ls-remote $REMOTE | grep heads/$BRANCH | tee /cache.txt
-RUN git clone $REMOTE /opt/contracts \
-    && cd /opt/contracts \
+RUN git clone $REMOTE /opt/contracts-v2 \
+    && cd /opt/contracts-v2 \
     && git checkout $BRANCH \
     && yarn install \
     && yarn build
@@ -30,4 +30,4 @@ WORKDIR /opt/contracts-v2
 
 ENV SERVER_PORT=8080
 
-ENTRYPOINT ["/wait-for-l1.sh", "yarn", "run", "--silent", "deploy"]
+ENTRYPOINT ["/opt/contracts-v2/wait-for-l1.sh", "yarn", "run", "--silent", "deploy"]
