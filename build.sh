@@ -95,6 +95,7 @@ function build() {
     fi
     cmd="$cmd -f $DIR/$SERVICE/Dockerfile"
     cmd="$cmd -t $ORG/$SERVICE:$TAG $DIR/$SERVICE"
+    # cmd="$cmd --no-cache"
 
     $cmd
 }
