@@ -74,17 +74,42 @@ RUN git clone $REMOTE /opt/optimism-ts-services \
     && yarn install \
     && yarn build
 
-FROM relayer
-ARG REMOTE
-LABEL io.optimism.repo.git.remote=$REMOTE
+# FROM relayer
+# ARG REMOTE
+# LABEL io.optimism.repo.git.remote=$REMOTE
 
-RUN apt-get update \
-    && apt-get install -y bash curl jq
+# RUN apt-get update \
+#     && apt-get install -y bash curl jq
 
 # copy & run
-  
+
+# use aws
+FROM isentia/python3.8-aws
+
+LABEL maintainer IoStrike
+
+# env install
+RUN apt-get install -y supervisor bash curl jq
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
+RUN apt-get install -y nodejs
+
+RUN apt-get -y install git binutils
+RUN mkdir -p /efs
+WORKDIR /efs
+RUN git clone https://github.com/aws/efs-utils
+WORKDIR /efs/efs-utils
+RUN ./build-deb.sh
+RUN apt-get -y install ./build/amazon-efs-utils*deb
+
+RUN pip3 install uwsgi
+RUN pip3 install flask
+RUN pip3 install requests
+
+RUN mkdir /app && mkdir -p /var/www/flask
+
+# copy 3 in 1
 COPY --from=geth /go-ethereum/build/bin/geth /usr/local/bin/
-EXPOSE 8545 8546 8547
+EXPOSE 8543 8545 8546 8547
 
 COPY --from=batch /opt/batch-submitter /opt/batch-submitter
 RUN ln -s /opt/batch-submitter/exec/run-batch-submitter.js \
@@ -99,4 +124,18 @@ COPY wait-for-l1-and-l2.sh /opt/
 COPY start-geth.sh /bin/start-geth.sh
 COPY start-others.sh /bin/start-others.sh
 
-ENTRYPOINT ["/bin/wait-for-l1.sh", "/bin/start-geth.sh", "/opt/wait-for-l1-and-l2.sh", "/bin/start-others.sh"]
+# mount folder
+RUN mkdir -p /metis
+
+COPY src /app
+
+COPY settings/restart.sh /app/restart.sh
+RUN chmod +x /app/restart.sh
+
+COPY settings/efs-utils.conf /etc/amazon/efs/efs-utils.conf
+COPY settings/uwsgi.ini /usr/local/etc/uwsgi/uwsgi.ini
+COPY settings/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# ENTRYPOINT ["/bin/wait-for-l1.sh", "/bin/start-geth.sh", "/opt/wait-for-l1-and-l2.sh", "/bin/start-others.sh"]
+WORKDIR /app
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
