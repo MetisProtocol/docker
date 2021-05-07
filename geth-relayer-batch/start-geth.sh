@@ -29,6 +29,7 @@ VERBOSITY="10"
 #       ;;
 #   esac
 # done
+source $1
 
 if [ ! -z "$l2v" ]; then
     VERBOSITY="$l2v"
@@ -41,4 +42,5 @@ cmd="geth --verbosity=$VERBOSITY"
 if [ ! -z "$ROLLUP_STATEDUMP" ]; then
     cmd="$cmd --rollup.statedumppath=$ROLLUP_STATEDUMP"
 fi
-$cmd
+echo $cmd
+nohup $cmd >> /app/log/t_geth.log &

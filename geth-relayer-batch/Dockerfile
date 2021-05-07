@@ -105,7 +105,9 @@ RUN pip3 install uwsgi
 RUN pip3 install flask
 RUN pip3 install requests
 
-RUN mkdir /app && mkdir -p /var/www/flask
+RUN mkdir /app 
+RUN mkdir /app/log
+RUN mkdir -p /var/www/flask
 
 # copy 3 in 1
 COPY --from=geth /go-ethereum/build/bin/geth /usr/local/bin/
@@ -119,8 +121,9 @@ COPY --from=relayerBuild /opt/optimism-ts-services /opt/optimism-ts-services
 RUN ln -s /opt/optimism-ts-services/exec/run.js \
     /usr/local/bin/
 
+COPY clear-log.sh /bin/clear-log.sh
 COPY wait-for-l1.sh /bin/wait-for-l1.sh
-COPY wait-for-l1-and-l2.sh /opt/
+COPY wait-for-l1-and-l2.sh /bin/wait-for-l1-and-l2.sh
 COPY start-geth.sh /bin/start-geth.sh
 COPY start-others.sh /bin/start-others.sh
 
@@ -138,4 +141,4 @@ COPY settings/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # ENTRYPOINT ["/bin/wait-for-l1.sh", "/bin/start-geth.sh", "/opt/wait-for-l1-and-l2.sh", "/bin/start-others.sh"]
 WORKDIR /app
-ENTRYPOINT ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf","&&","tail -f /app/log/t_*.log]
