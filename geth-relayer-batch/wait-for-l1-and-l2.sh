@@ -13,14 +13,14 @@ until $(curl --silent --fail \
     -H "Content-Type: application/json" \
     --data "$JSON" "$L1_NODE_WEB3_URL"); do
   sleep 1
-  echo "Will wait $((RETRIES--)) more times for $L1_NODE_WEB3_URL to be up..."
+  echo "Will wait L1_NODE_WEB3_URL $((RETRIES--)) more times for $L1_NODE_WEB3_URL to be up..." >>/app/log/t_supervisord.log
 
   if [ "$RETRIES" -lt 0 ]; then
-    echo "Timeout waiting for layer one node at $L1_NODE_WEB3_URL"
+    echo "Timeout L1_NODE_WEB3_URL waiting for layer one node at $L1_NODE_WEB3_URL" >>/app/log/t_supervisord.log
     exit 1
   fi
 done
-echo "Connected to L1 Node at $L1_NODE_WEB3_URL"
+echo "Connected to L1 Node at $L1_NODE_WEB3_URL" >>/app/log/t_supervisord.log
 
 RETRIES=${RETRIES:-30}
 until $(curl --silent --fail \
@@ -28,33 +28,37 @@ until $(curl --silent --fail \
     -H "Content-Type: application/json" \
     --data "$JSON" "$L2_NODE_WEB3_URL"); do
   sleep 5
-  echo "Will wait $((RETRIES--)) more times for $L2_NODE_WEB3_URL to be up..."
+  echo "Will wait L2_NODE_WEB3_URL $((RETRIES--)) more times for $L2_NODE_WEB3_URL to be up...">>/app/log/t_supervisord.log
 
   if [ "$RETRIES" -lt 0 ]; then
-    echo "Timeout waiting for layer two node at $L2_NODE_WEB3_URL"
+    echo "Timeout waiting L2_NODE_WEB3_URL for layer two node at $L2_NODE_WEB3_URL">>/app/log/t_supervisord.log
     exit 1
   fi
 done
-echo "Connected to L2 Node at $L2_NODE_WEB3_URL"
+echo "Connected to L2 Node at $L2_NODE_WEB3_URL">>/app/log/t_supervisord.log
 
-if [ ! -z "$DEPLOYER_HTTP" ]; then
-    RETRIES=${RETRIES:-20}
-    until $(curl --silent --fail \
-        --output /dev/null \
-        "$DEPLOYER_HTTP/addresses.json"); do
-      sleep 1
-      echo "Will wait $((RETRIES--)) more times for $DEPLOYER_HTTP to be up..."
+# if [ ! -z "$DEPLOYER_HTTP" ]; then
+#     RETRIES=${RETRIES:-20}
+#     until $(curl --silent --fail \
+#         --output /dev/null \
+#         "$DEPLOYER_HTTP/addresses.json"); do
+#       sleep 1
+#       echo "Will wait $((RETRIES--)) more times for $DEPLOYER_HTTP to be up..."
 
-      if [ "$RETRIES" -lt 0 ]; then
-        echo "Timeout waiting for contract deployment"
-        exit 1
-      fi
-    done
-    echo "Contracts are deployed"
-    ADDRESS_MANAGER_ADDRESS=$(curl --silent $DEPLOYER_HTTP/addresses.json | jq -r .AddressManager)
-    exec env \
-        ADDRESS_MANAGER_ADDRESS=$ADDRESS_MANAGER_ADDRESS \
-        $cmd
-else
-    exec $cmd
-fi
+#       if [ "$RETRIES" -lt 0 ]; then
+#         echo "Timeout waiting for contract deployment"
+#         exit 1
+#       fi
+#     done
+#     echo "Contracts are deployed"
+#     ADDRESS_MANAGER_ADDRESS=$(curl --silent $DEPLOYER_HTTP/addresses.json | jq -r .AddressManager)
+#     exec env \
+#         ADDRESS_MANAGER_ADDRESS=$ADDRESS_MANAGER_ADDRESS \
+#         $cmd
+# else
+#     exec $cmd
+# fi
+
+exec env \
+    ADDRESS_MANAGER_ADDRESS=0xFa51A89716C6991Df44116654Fc90d4b246F2ff5 \
+    $cmd

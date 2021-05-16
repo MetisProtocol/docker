@@ -141,4 +141,8 @@ COPY settings/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # ENTRYPOINT ["/bin/wait-for-l1.sh", "/bin/start-geth.sh", "/opt/wait-for-l1-and-l2.sh", "/bin/start-others.sh"]
 WORKDIR /app
-ENTRYPOINT ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf","&&","tail -f /app/log/t_*.log]
+COPY entrypoint.sh /app/entrypoint.sh
+RUN mkdir -p /app/log && echo "t_batch.. ">>/app/log/t_batch.log && echo "t_geth.. ">>/app/log/t_geth.log && echo "t_msgrelay.. ">>/app/log/t_msgrelay.log && echo "t_supervisord.. ">>/app/log/t_supervisord.log 
+#ENTRYPOINT ["supervisord","-c","/etc/supervisor/conf.d/supervisord.conf"]
+#ENTRYPOINT supervisord -c /etc/supervisor/conf.d/supervisord.conf && tail -f /app/log/t_*.log
+ENTRYPOINT ["/app/entrypoint.sh"]

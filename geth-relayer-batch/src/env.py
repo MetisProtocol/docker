@@ -15,7 +15,9 @@ class MyEnv:
     if not outf:
       print ("env file cannot be opened for write!")
     for k, v in self.envs.items() :
-      outf.write(k + "=" + v + "\n")
+      x=v.replace('\\n', '')
+      self.envs[k]=x
+      outf.write(k+ "=" + x + "\n")
     outf.close()
    
   def Load(self) :

@@ -38,7 +38,7 @@ def update_chain():
         output=_try_cmd(['mount', '-t', 'efs', '-o', f'tls,accesspoint={access_point_id}',f'{efs_id}:', the_path])
         logging.warn(f'mount to ap:{efs_id},{access_point_id},{output}')
     if output is None or len(output)<=0:
-        body=request.get_data()
+        body=request.get_data(as_text=True)
         output=_update_chain(json.loads(body))
     response = {
         'data': output.decode('utf-8')
@@ -54,18 +54,16 @@ def _try_cmd(cmds):
         
 def _update_chain(body):
     logging.warn(f'update_chain to file:{body}')
-    l2v = '10'
-    l2r = ''
     if body is not None:
         myEnv = MyEnv('')
         myEnv.SetEnvFile("/app/env.sh")
         myEnv.envs=body
         myEnv.Save()
-        if 'l2v' in body:
-            l2v = body['l2v']
-        if 'l2r' in body:
-            l2r = body['l2r']
+    logging.warn(f'update_chain to file2:{myEnv.envs}')
 
+    output = _try_cmd(['cat','/app/env.sh'])
+    logging.warn(output)
+    
     output = _try_cmd([f'/app/restart.sh','/app/env.sh'])
     logging.warn(output)
     return output
